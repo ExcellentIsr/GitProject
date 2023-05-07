@@ -39,8 +39,6 @@ public class GitRepositoryConsoleImpl implements GitRepository {
 			if (flag) {
 				Commit commit = newCommit(message, fileStates);
 				branchAndCommits.get(branchHead).add(commit);
-				// listCommits.add(commit);
-				// branchAndCommits.replace(branchHead, listCommits);
 				commitHead = commit.commitMessage().name();
 				res = String.format("Commited. Name: %s with message \"%s\"", commit.commitMessage().name(),
 						commit.commitMessage().message());
