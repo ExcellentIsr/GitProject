@@ -1,4 +1,4 @@
-package telran.gitappl;
+package telran.gitAppl;
 
 import java.nio.file.Path;
 import java.util.List;

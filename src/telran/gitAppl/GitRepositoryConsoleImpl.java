@@ -1,4 +1,4 @@
-package telran.gitappl;
+package telran.gitAppl;
 
 import java.io.*;
 import java.nio.file.*;
