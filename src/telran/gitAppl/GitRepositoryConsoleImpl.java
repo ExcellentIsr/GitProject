@@ -15,7 +15,6 @@ import telran.gitRecords.FileState;
 public class GitRepositoryConsoleImpl implements GitRepository {
 	private static final long serialVersionUID = 1L;
 
-	private ArrayList<Commit> listCommits = new ArrayList<>();
 	public HashMap<String, ArrayList<Commit>> branchAndCommits = new HashMap<>();
 	private HashSet<String> ignoreFiles = new HashSet<>();
 
@@ -39,8 +38,9 @@ public class GitRepositoryConsoleImpl implements GitRepository {
 
 			if (flag) {
 				Commit commit = newCommit(message, fileStates);
-				listCommits.add(commit);
-				branchAndCommits.replace(branchHead, listCommits);
+				branchAndCommits.get(branchHead).add(commit);
+				// listCommits.add(commit);
+				// branchAndCommits.replace(branchHead, listCommits);
 				commitHead = commit.commitMessage().name();
 				res = String.format("Commited. Name: %s with message \"%s\"", commit.commitMessage().name(),
 						commit.commitMessage().message());
@@ -67,7 +67,7 @@ public class GitRepositoryConsoleImpl implements GitRepository {
 //			}
 //		}
 		ArrayList<Commit> list = branchAndCommits.get(branchHead);
-		return list.isEmpty() ? null : list.get(list.size() - 1);
+		return commitHead == null ? null : list.get(list.size() - 1);
 	}
 
 	private Map<String, FileParameters> getFileParameters(List<FileState> fileStates) {
@@ -118,9 +118,9 @@ public class GitRepositoryConsoleImpl implements GitRepository {
 		if (commit == null) {
 			res = CommitСonditions.UNTRACKED;
 		} else if (!commit.fileParameters().containsKey(path.toString())) {
-			int indPrevCommit = branchAndCommits.get(branchHead).indexOf(commit);
-			Commit prevCommit = branchAndCommits.get(branchHead).get(indPrevCommit).prevCommitName();
-			res = checkFileStatus(path, prevCommit);
+//			int indPrevCommit = branchAndCommits.get(branchHead).indexOf(commit);
+//			Commit prevCommit = branchAndCommits.get(branchHead).get(indPrevCommit).prevCommitName();
+			res = checkFileStatus(path, getCommit(commit.commitMessage().name()).prevCommitName());
 		} else {
 			Instant commitTime = commit.commitTime();
 			Instant lastModified = Instant.ofEpochMilli(path.toFile().lastModified());
@@ -159,24 +159,23 @@ public class GitRepositoryConsoleImpl implements GitRepository {
 	@Override
 	public String createBranch(String branchName) {
 		String res = null;
-		List<FileState> fileStates = info();
-		for (FileState state : fileStates) {
-			if ((state.condition() != CommitСonditions.COMMITED)) {
-				res = "Must be commited";
+		if (branchAndCommits.containsKey(branchName)) {
+			res = "This branch already exists";
+		} else {
+			List<FileState> fileStates = info();
+			for (FileState state : fileStates) {
+				if ((state.condition() != CommitСonditions.COMMITED)) {
+					res = "Current commit was not committed";
+				}
 			}
-		}
-		if (branchAndCommits.isEmpty()) {
-			res = null;
-		}
-		if (res == null) {
-			if (!branchAndCommits.containsKey(branchName)) {
-				listCommits = new ArrayList<>();
-				branchAndCommits.put(branchName, listCommits);
+			if (branchHead == null) {
+				res = null;
+			}
+			if (res == null) {
+				branchAndCommits.put(branchName, new ArrayList<>());
 				branchHead = branchName;
 				commitHead = null;
 				res = "Branch was created";
-			} else {
-				res = "This branch already exists";
 			}
 		}
 		return res;
@@ -190,8 +189,7 @@ public class GitRepositoryConsoleImpl implements GitRepository {
 		} else if (branchAndCommits.containsKey(newName)) {
 			res = "Branch " + newName + " already exists";
 		} else {
-			ArrayList<Commit> list = branchAndCommits.get(oldName);
-			branchAndCommits.remove(oldName);
+			ArrayList<Commit> list = branchAndCommits.remove(oldName);
 			branchAndCommits.put(newName, list);
 			res = "Renamed";
 			if (oldName.equals(branchHead)) {
@@ -229,8 +227,7 @@ public class GitRepositoryConsoleImpl implements GitRepository {
 	@Override
 	public List<String> branches() {
 		return branchAndCommits.keySet().stream()
-				.map(branch -> branch.equals(branchHead) ? branch + "(current)" : branch)
-				.toList();
+				.map(branch -> branch.equals(branchHead) ? branch + "(current)" : branch).toList();
 	}
 
 	@Override
