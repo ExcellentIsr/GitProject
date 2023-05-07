@@ -1,4 +1,4 @@
-package telran.gitAppl;
+package telran.gitRecords;
 
 import java.io.Serializable;
 import java.util.Random;

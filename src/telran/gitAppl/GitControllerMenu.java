@@ -3,6 +3,8 @@ package telran.gitAppl;
 import java.nio.file.Path;
 import java.util.List;
 
+import telran.gitRecords.CommitMessage;
+import telran.gitRecords.FileState;
 import telran.view.InputOutput;
 import telran.view.Item;
 import telran.view.Menu;

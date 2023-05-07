@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.nio.file.Path;
 import java.util.List;
 
+import telran.gitRecords.CommitMessage;
+import telran.gitRecords.FileState;
+
 public interface GitRepository extends Serializable {
 	String GIT_FILE = ".mygit";
 	String commit(String commitMessage);

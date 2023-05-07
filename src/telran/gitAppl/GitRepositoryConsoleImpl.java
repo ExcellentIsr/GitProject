@@ -7,6 +7,11 @@ import java.time.Instant;
 import java.util.*;
 import java.util.Map.Entry;
 
+import telran.gitRecords.Commit;
+import telran.gitRecords.CommitMessage;
+import telran.gitRecords.FileParameters;
+import telran.gitRecords.FileState;
+
 public class GitRepositoryConsoleImpl implements GitRepository {
 	private static final long serialVersionUID = 1L;
 
