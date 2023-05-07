@@ -15,7 +15,7 @@ import telran.gitRecords.FileState;
 public class GitRepositoryConsoleImpl implements GitRepository {
 	private static final long serialVersionUID = 1L;
 
-	public HashMap<String, ArrayList<Commit>> branchAndCommits = new HashMap<>();
+	public HashMap<String, LinkedList<Commit>> branchAndCommits = new HashMap<>();
 	private HashSet<String> ignoreFiles = new HashSet<>();
 
 	private String branchHead = null;
@@ -64,8 +64,8 @@ public class GitRepositoryConsoleImpl implements GitRepository {
 //				flag = true;
 //			}
 //		}
-		ArrayList<Commit> list = branchAndCommits.get(branchHead);
-		return commitHead == null ? null : list.get(list.size() - 1);
+		LinkedList<Commit> list = branchAndCommits.get(branchHead);
+		return commitHead == null ? null : list.getLast();
 	}
 
 	private Map<String, FileParameters> getFileParameters(List<FileState> fileStates) {
@@ -137,7 +137,7 @@ public class GitRepositoryConsoleImpl implements GitRepository {
 	}
 
 	private Commit getCommit(String commitName, String branchName) {
-		ArrayList<Commit> list = branchAndCommits.get(branchName);
+		LinkedList<Commit> list = branchAndCommits.get(branchName);
 		Commit res = null;
 		if (commitName != null && list != null) {
 			boolean flag = false;
@@ -170,7 +170,7 @@ public class GitRepositoryConsoleImpl implements GitRepository {
 				res = null;
 			}
 			if (res == null) {
-				branchAndCommits.put(branchName, new ArrayList<>());
+				branchAndCommits.put(branchName, new LinkedList<>());
 				branchHead = branchName;
 				commitHead = null;
 				res = "Branch was created";
@@ -187,7 +187,7 @@ public class GitRepositoryConsoleImpl implements GitRepository {
 		} else if (branchAndCommits.containsKey(newName)) {
 			res = "Branch " + newName + " already exists";
 		} else {
-			ArrayList<Commit> list = branchAndCommits.remove(oldName);
+			LinkedList<Commit> list = branchAndCommits.remove(oldName);
 			branchAndCommits.put(newName, list);
 			res = "Renamed";
 			if (oldName.equals(branchHead)) {
@@ -249,8 +249,8 @@ public class GitRepositoryConsoleImpl implements GitRepository {
 		}
 		if (res == null) {
 			clear();
-			ArrayList<Commit> list = branchAndCommits.get(branchName);
-			commitHead = list.get(list.size() - 1).commitMessage().name();
+			LinkedList<Commit> list = branchAndCommits.get(branchName);
+			commitHead = list.getLast().commitMessage().name();
 			load(commitHead, branchName);
 			branchHead = branchName;
 			res = "Switched";
